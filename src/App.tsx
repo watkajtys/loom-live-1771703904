@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
+import CodexSidebar from './components/CodexSidebar';
+
 // --- Components ---
 
 const Header = () => (
@@ -28,7 +33,10 @@ const ConnectionLayer = () => (
 );
 
 const ObsidianSpireNode = () => (
-  <div className="absolute top-[220px] left-6 w-64 glass-panel rounded-sm p-5 cursor-grab active:cursor-grabbing hover:border-white/30 transition-colors group">
+  <div
+    id="obsidian-spire"
+    className="absolute top-[220px] left-6 w-64 glass-panel rounded-sm p-5 cursor-grab active:cursor-grabbing hover:border-white/30 transition-colors group"
+  >
     <div className="active-node-glow opacity-0 group-hover:opacity-100 transition-opacity"></div>
     <div className="flex items-start justify-between mb-4">
       <div className="flex flex-col gap-1">
@@ -51,7 +59,7 @@ const ObsidianSpireNode = () => (
   </div>
 );
 
-const WhisperingWoodsNode = () => (
+const WhisperingWoodsNode = ({ onInspect }: { onInspect?: () => void }) => (
   <div className="absolute top-[480px] left-1/2 -translate-x-1/2 w-72 glass-panel rounded-sm p-6 cursor-grab active:cursor-grabbing hover:border-white/40 transition-colors group z-20">
     <div className="active-node-glow opacity-100"></div>
     <div className="flex items-start justify-between mb-4">
@@ -72,7 +80,10 @@ const WhisperingWoodsNode = () => (
         <div className="w-6 h-6 rounded-full bg-gray-500 border border-mono-bg"></div>
         <div className="w-6 h-6 rounded-full bg-gray-800 border border-mono-bg flex items-center justify-center text-[8px] text-white">+3</div>
       </div>
-      <button className="text-[10px] uppercase tracking-widest text-white hover:text-white/70 transition-colors border border-white/20 px-3 py-1 rounded-full hover:bg-white/5">
+      <button 
+        onClick={onInspect}
+        className="text-[10px] uppercase tracking-widest text-white hover:text-white/70 transition-colors border border-white/20 px-3 py-1 rounded-full hover:bg-white/5"
+      >
         Inspect
       </button>
     </div>
@@ -122,15 +133,98 @@ const Pagination = () => (
 );
 
 function App() {
+  const [activeNode, setActiveNode] = useState<string | null>(null);
+  const [dragStart, setDragStart] = useState<{x: number, y: number} | null>(null);
+  const [dragCurrent, setDragCurrent] = useState<{x: number, y: number} | null>(null);
+
+  const handleRelationshipDragStart = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    setDragStart({ x: info.point.x, y: info.point.y });
+    setDragCurrent({ x: info.point.x, y: info.point.y });
+  };
+
+  const handleRelationshipDrag = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    setDragCurrent({ x: info.point.x, y: info.point.y });
+  };
+
+  const handleRelationshipDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    // Reset drag state
+    setDragStart(null);
+    setDragCurrent(null);
+
+    // Basic hit detection for demonstration
+    const spire = document.getElementById('obsidian-spire');
+    if (spire) {
+      const rect = spire.getBoundingClientRect();
+      const point = info.point;
+      
+      // Check if drop point is within the Obsidian Spire node
+      if (
+        point.x >= rect.left && 
+        point.x <= rect.right && 
+        point.y >= rect.top && 
+        point.y <= rect.bottom
+      ) {
+        // In a real app, this would trigger a state update or API call
+        console.log("Relationship created: Whispering Woods -> The Obsidian Spire");
+        alert("New Relationship Established: Magical Influence");
+      }
+    }
+  };
+
   return (
     <div className="h-full w-full flex flex-col bg-mono-bg text-mono-text-primary font-sans overflow-hidden relative antialiased selection:bg-white selection:text-mono-bg">
       <Header />
-      <main className="flex-1 relative w-full h-full overflow-hidden z-10 touch-none">
+      
+      {/* Thread Visualizer */}
+      {dragStart && dragCurrent && (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[60]">
+          <line 
+            x1={dragStart.x} 
+            y1={dragStart.y} 
+            x2={dragCurrent.x} 
+            y2={dragCurrent.y} 
+            stroke="white" 
+            strokeWidth="1.5" 
+            strokeDasharray="4,4" 
+            className="opacity-60"
+          />
+          <circle cx={dragStart.x} cy={dragStart.y} r="3" fill="white" className="opacity-60" />
+          <circle cx={dragCurrent.x} cy={dragCurrent.y} r="3" fill="white" className="opacity-60" />
+        </svg>
+      )}
+
+      {/* 
+        The "Canvas" 
+        Using motion.main to pan the viewport when a node is inspected.
+      */}
+      <motion.main 
+        className="flex-1 relative w-full h-full overflow-hidden z-10 touch-none"
+        animate={{ 
+          x: activeNode ? '-20%' : '0%', 
+          scale: activeNode ? 0.95 : 1 
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+        onClick={(e) => {
+          // Close sidebar if clicking on background (not on a node)
+          if (activeNode && e.target === e.currentTarget) {
+            setActiveNode(null);
+          }
+        }}
+      >
         <ConnectionLayer />
         <ObsidianSpireNode />
-        <WhisperingWoodsNode />
+        <WhisperingWoodsNode onInspect={() => setActiveNode('whispering-woods')} />
         <SunkenGrottoNode />
-      </main>
+      </motion.main>
+      
+      <CodexSidebar 
+        isOpen={activeNode === 'whispering-woods'} 
+        onClose={() => setActiveNode(null)}
+        onRelationshipDragStart={handleRelationshipDragStart}
+        onRelationshipDrag={handleRelationshipDrag}
+        onRelationshipDragEnd={handleRelationshipDragEnd}
+      />
+      
       <FloatingControls />
       <Pagination />
     </div>
