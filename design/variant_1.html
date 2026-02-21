@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html class="dark" lang="en"><head>
+<html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Chronos Canvas: Monastic Minimal Variant</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<title>Codex Sidebar: Ethereal Light Variant</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "mono-bg": "#1c1c1e",
-                        "mono-surface": "#2c2c2e",
-                        "mono-border": "rgba(255, 255, 255, 0.2)",
-                        "mono-text-primary": "#f2f2f7",
-                        "mono-text-secondary": "#aeaeb2",
+                        "ethereal-bg": "#f3f4f6",
+                        "ethereal-surface": "rgba(255, 255, 255, 0.6)",
+                        "ethereal-text-primary": "#2d3748",
+                        "ethereal-text-secondary": "#718096",
+                        "ethereal-accent": "#d4af37", // Gold
                     },
                     fontFamily: {
-                        serif: ["Playfair Display", "serif"],
-                        sans: ["Inter", "sans-serif"],
+                        serif: ["Lora", "serif"],
                     },
-                    backgroundImage: {
-                        'soft-gradient': "radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 70%)",
+                    boxShadow: {
+                        'soft-glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow-gold': '0 0 15px rgba(212, 175, 55, 0.3)',
                     }
                 },
             },
@@ -37,132 +36,219 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        .glass-panel {
-            background: rgba(30, 30, 32, 0.85);backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        .sidebar-glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-left: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: -10px 0 40px rgba(200, 200, 210, 0.2);
         }
-        .active-node-glow {
-            position: absolute;
-            z-index: -1;
-            width: 140%;
-            height: 140%;
-            top: -20%;
-            left: -20%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 60%);
-            pointer-events: none;
-        }.connector-line {
-            stroke-dasharray: 2, 4;stroke-width: 0.8px;}
-    </style>
-<style>
+        .node-glass {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .connector-line {
+            stroke-dasharray: 4, 4;
+            stroke-width: 1px;
+            animation: dash 60s linear infinite;
+        }
+        .drag-thread {
+            stroke-dasharray: 6, 3;
+            stroke-width: 1.5px;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+            animation: flow 3s linear infinite;
+        }
+        @keyframes flow {
+            from { stroke-dashoffset: 20; }
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+        .tiptap-editor {
+            font-family: 'Lora', serif;
+            color: #4a5568;
+        }
+        .tiptap-editor p {
+            margin-bottom: 1.25em;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+        .tiptap-editor h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-top: 2em;
+            margin-bottom: 0.75em;
+            color: #2d3748;
+        }
+        .tiptap-editor blockquote {
+            border-left: 3px solid rgba(212, 175, 55, 0.4);
+            padding-left: 1rem;
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 1.25em;
+            background: rgba(255, 255, 255, 0.3);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-radius: 0 4px 4px 0;
+        }
         body {
-          min-height: max(884px, 100dvh);
+            background: radial-gradient(circle at 50% 50%, #f7fafc 0%, #e2e8f0 100%);
         }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-mono-bg text-mono-text-primary font-sans h-screen w-full overflow-hidden flex flex-col relative antialiased selection:bg-white selection:text-mono-bg">
-<header class="absolute top-0 left-0 right-0 z-50 pt-12 pb-4 px-6 flex justify-between items-center bg-gradient-to-b from-mono-bg/90 to-transparent">
-<div class="flex items-center gap-3 text-mono-text-secondary">
-<span class="material-symbols-outlined text-sm opacity-70">menu_book</span>
-<div class="flex items-center gap-2 text-xs tracking-widest uppercase font-medium">
-<span class="opacity-50">Eldoria</span>
-<span class="opacity-30">/</span>
-<span class="opacity-50">Fractured Lands</span>
-<span class="opacity-30">/</span>
-<span class="text-white border-b border-white/20 pb-0.5">Whispering Woods</span>
-</div>
-</div>
-<button class="w-8 h-8 flex items-center justify-center rounded-full border border-mono-border hover:bg-white/5 transition-colors text-mono-text-primary">
-<span class="material-symbols-outlined text-sm">settings</span>
-</button>
-</header>
-<main class="flex-1 relative w-full h-full overflow-hidden z-10 touch-none">
-<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
-<path class="connector-line" d="M180,300 C250,300 150,520 220,520" fill="none" stroke="#888"></path>
-<path class="connector-line" d="M220,520 C280,520 300,450 340,400" fill="none" stroke="#888" stroke-opacity="0.5"></path>
-<rect fill="#1c1c1e" height="18" rx="4" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" width="90" x="185" y="383"></rect>
-<text fill="#ccc" font-family="Inter" font-size="9" letter-spacing="0.5" text-anchor="middle" x="230" y="396">CORRUPTION</text>
+</head>
+<body class="text-ethereal-text-primary font-serif h-screen w-full overflow-hidden flex relative antialiased selection:bg-ethereal-accent/20 selection:text-gray-800">
+<main class="absolute inset-0 w-full h-full overflow-hidden z-0">
+<div class="absolute inset-0 opacity-[0.4]" style="background-image: radial-gradient(#cbd5e0 1px, transparent 1px); background-size: 32px 32px;"></div>
+<div class="absolute inset-0 transform -translate-x-[20%] transition-transform duration-700 ease-out">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
+<path class="connector-line opacity-40" d="M380,450 C480,450 450,280 580,280" fill="none" stroke="#a0aec0"></path>
+<path class="drag-thread opacity-90" d="M1250,820 C1000,820 500,600 380,520" fill="none" stroke="#fff" stroke-linecap="round" style="filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));"></path>
+<circle class="animate-pulse" cx="380" cy="520" fill="#d4af37" r="3" stroke="white" stroke-width="1"></circle>
 </svg>
-<div class="absolute top-[220px] left-6 w-64 glass-panel rounded-sm p-5 cursor-grab active:cursor-grabbing hover:border-white/30 transition-colors group">
-<div class="active-node-glow opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex items-start justify-between mb-4">
-<div class="flex flex-col gap-1">
-<span class="text-[10px] uppercase tracking-wider text-mono-text-secondary">Location</span>
-<h3 class="text-white font-serif font-normal text-xl leading-tight italic">The Obsidian Spire</h3>
+<div class="absolute top-[480px] left-[200px] w-64 node-glass rounded-xl p-4 group hover:border-ethereal-accent/40 transition-colors duration-500">
+<div class="flex items-start justify-between mb-3">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest text-ethereal-text-secondary mb-1 font-semibold">Location</span>
+<h3 class="text-gray-800 font-serif text-lg leading-tight font-medium">The Obsidian Spire</h3>
 </div>
-<span class="material-symbols-outlined text-mono-text-secondary text-base opacity-50">castle</span>
-</div>
-<div class="h-20 w-full bg-black/40 mb-4 overflow-hidden relative border border-white/5 grayscale hover:grayscale-0 transition-all duration-500">
-<img alt="Dark gothic spire silhouette against a purple night sky" class="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
-</div>
-<div class="border-t border-white/10 pt-3 mt-1 flex justify-between items-center">
-<span class="text-[10px] text-mono-text-secondary">Magical Focus Point</span>
-<div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+<div class="w-8 h-8 rounded-full bg-white/40 flex items-center justify-center border border-white/60 group-hover:border-ethereal-accent/30 group-hover:text-ethereal-accent transition-all shadow-sm">
+<span class="material-symbols-outlined text-sm font-light">castle</span>
 </div>
 </div>
-<div class="absolute top-[480px] left-1/2 -translate-x-1/2 w-72 glass-panel rounded-sm p-6 cursor-grab active:cursor-grabbing hover:border-white/40 transition-colors group z-20">
-<div class="active-node-glow opacity-100"></div>
-<div class="flex items-start justify-between mb-4">
-<div class="flex flex-col gap-1">
-<span class="text-[10px] uppercase tracking-wider text-mono-text-secondary">Territory</span>
-<h3 class="text-white font-serif font-semibold text-2xl leading-tight">Whispering Woods</h3>
-</div>
-<div class="w-6 h-6 border border-white/20 flex items-center justify-center text-white/70 rounded-full">
-<span class="material-symbols-outlined text-sm">forest</span>
+<div class="h-24 w-full bg-gray-100 rounded-lg overflow-hidden relative border border-white/20">
+<img alt="Dark gothic spire" class="w-full h-full object-cover opacity-80 mix-blend-overlay group-hover:opacity-100 transition-opacity grayscale hover:grayscale-0 duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent"></div>
 </div>
 </div>
-<p class="text-sm font-serif italic text-mono-text-secondary mb-5 leading-relaxed border-l-2 border-white/20 pl-3">
-            "Home of the unseen fae. The trees themselves seem to shift when not observed directly."
-        </p>
-<div class="flex items-center justify-between pt-2 border-t border-white/10">
-<div class="flex -space-x-3 opacity-70 grayscale group-hover:grayscale-0 transition-all">
-<div class="w-6 h-6 rounded-full bg-gray-600 border border-mono-bg"></div>
-<div class="w-6 h-6 rounded-full bg-gray-500 border border-mono-bg"></div>
-<div class="w-6 h-6 rounded-full bg-gray-800 border border-mono-bg flex items-center justify-center text-[8px] text-white">+3</div>
+<div class="absolute top-[200px] left-[580px] w-72 node-glass rounded-xl p-0 shadow-soft-glass ring-1 ring-white/60">
+<div class="absolute -top-3 -right-3 bg-white text-gray-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md border border-gray-100">Editing</div>
+<div class="h-32 w-full bg-gray-50 rounded-t-xl overflow-hidden relative">
+<img alt="Mystical forest" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/90 via-white/20 to-transparent"></div>
 </div>
-<button class="text-[10px] uppercase tracking-widest text-white hover:text-white/70 transition-colors border border-white/20 px-3 py-1 rounded-full hover:bg-white/5">
-                Inspect
-            </button>
+<div class="p-6 pt-3 bg-white/30 backdrop-blur-sm rounded-b-xl">
+<h3 class="text-gray-800 font-serif text-2xl mb-2 font-medium">Whispering Woods</h3>
+<p class="text-sm text-ethereal-text-secondary line-clamp-2 leading-relaxed italic">A sentient organism of vast proportions defying traditional cartography.</p>
 </div>
 </div>
-<div class="absolute top-[350px] left-[320px] w-48 glass-panel rounded-sm p-4 opacity-40 hover:opacity-100 transition-opacity scale-95 border-dashed border-white/20">
-<div class="flex items-center justify-between mb-2">
-<h4 class="text-slate-200 font-serif text-lg italic">Sunken Grotto</h4>
-<span class="material-symbols-outlined text-xs text-mono-text-secondary">water_drop</span>
+<div class="absolute top-[150px] left-[250px] w-40 node-glass rounded-lg p-3 opacity-40 blur-[2px]">
+<div class="h-2 w-8 bg-gray-300/50 rounded-full mb-2"></div>
+<div class="h-2 w-20 bg-gray-200/50 rounded-full"></div>
 </div>
-<div class="h-[1px] w-full bg-white/10 mt-2 mb-2">
-<div class="h-full bg-white w-1/3"></div>
-</div>
-<p class="text-[9px] uppercase tracking-widest text-mono-text-secondary text-right">Draft</p>
 </div>
 </main>
-<div class="absolute bottom-10 right-8 z-50 flex flex-col items-end gap-4 group">
-<div class="flex flex-col gap-3 items-end transition-all duration-300 opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto mb-2">
-<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-mono-text-secondary hover:text-white hover:border-white transition-all shadow-lg" title="Add Node">
-<span class="material-symbols-outlined text-lg">add</span>
-</button>
-<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-mono-text-secondary hover:text-white hover:border-white transition-all shadow-lg" title="Search">
-<span class="material-symbols-outlined text-lg">search</span>
-</button>
-<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-mono-text-secondary hover:text-white hover:border-white transition-all shadow-lg" title="Zoom">
-<span class="material-symbols-outlined text-lg">center_focus_strong</span>
-</button>
+<aside class="absolute top-0 right-0 bottom-0 w-[600px] sidebar-glass z-50 flex flex-col transform transition-transform duration-500">
+<header class="h-16 flex items-center justify-between px-8 border-b border-gray-200/30 bg-white/20 backdrop-blur-md sticky top-0 z-20">
+<div class="flex items-center gap-3 text-sm">
+<div class="flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[20px] font-light">grid_view</span>
 </div>
-<button class="w-14 h-14 bg-white text-mono-bg rounded-full shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] flex items-center justify-center transition-all hover:scale-105 active:scale-95 z-50">
-<span class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform duration-300">more_horiz</span>
-</button>
+<span class="text-gray-300 text-xs">/</span>
+<div class="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer">
+<span class="text-xs uppercase tracking-widest font-semibold">Fractured Lands</span>
 </div>
-<div class="absolute bottom-0 w-full z-40 flex justify-center pb-4 pointer-events-none">
-<div class="flex gap-1.5 pointer-events-auto glass-panel px-3 py-1.5 rounded-full border border-white/10">
-<div class="w-1.5 h-1.5 bg-white rounded-full"></div>
-<div class="w-1.5 h-1.5 bg-white/20 rounded-full hover:bg-white/50 transition-colors cursor-pointer"></div>
-<div class="w-1.5 h-1.5 bg-white/20 rounded-full hover:bg-white/50 transition-colors cursor-pointer"></div>
+<span class="text-gray-300 text-xs">/</span>
+<div class="flex items-center gap-2 text-gray-800 cursor-default">
+<span class="w-1.5 h-1.5 rounded-full bg-yellow-400 shadow-glow-gold"></span>
+<span class="text-xs uppercase tracking-widest font-bold text-gray-700">Whispering Woods</span>
 </div>
 </div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white/40 transition-colors">
+<span class="material-symbols-outlined text-[20px] font-light">more_horiz</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white/40 transition-colors">
+<span class="material-symbols-outlined text-[20px] font-light">close</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto overflow-x-hidden relative no-scrollbar">
+<div class="h-56 w-full relative group">
+<img class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/90"></div>
+<button class="absolute bottom-4 right-4 text-xs bg-white/60 backdrop-blur-md border border-white/40 text-gray-700 px-4 py-1.5 rounded-full hover:bg-white hover:shadow-md transition-all opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 font-medium tracking-wide">
+                Change Cover
+            </button>
+</div>
+<div class="px-12 -mt-16 relative z-10 pb-32">
+<div class="w-20 h-20 rounded-2xl bg-white border border-white/50 shadow-soft-glass flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-4xl text-yellow-600/80 font-light">forest</span>
+</div>
+<h1 class="font-serif text-5xl text-gray-800 mb-3 leading-tight outline-none tracking-tight font-medium" contenteditable="true">Whispering Woods</h1>
+<div class="flex items-center gap-8 mb-12 border-b border-gray-200/50 pb-8 pt-2">
+<div class="flex flex-col gap-1.5">
+<span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Type</span>
+<div class="flex items-center gap-2 text-sm text-gray-600 bg-white/40 px-3 py-1.5 rounded-md hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/40 hover:shadow-sm">
+<span class="material-symbols-outlined text-base font-light text-gray-500">terrain</span>
+                        Territory
+                    </div>
+</div>
+<div class="flex flex-col gap-1.5">
+<span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Status</span>
+<div class="flex items-center gap-2 text-sm text-gray-600 bg-white/40 px-3 py-1.5 rounded-md hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/40 hover:shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm"></span>
+                        Active
+                    </div>
+</div>
+<div class="flex flex-col gap-1.5">
+<span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Owner</span>
+<div class="flex items-center gap-2 text-sm text-gray-600 bg-white/40 px-3 py-1.5 rounded-md hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/40 hover:shadow-sm">
+<div class="w-5 h-5 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[9px] text-slate-600 font-bold shadow-sm">DM</div>
+                        Game Master
+                    </div>
+</div>
+</div>
+<div class="tiptap-editor outline-none text-lg" contenteditable="true">
+<p>The Whispering Woods is not merely a forest, but a sentient organism of vast proportions. Travelers report that the trees themselves seem to shift positions when not directly observed, creating a labyrinth that defies traditional cartography.</p>
+<blockquote>
+                    "The leaves don't rustle with the wind; they rustle with intent. Watch your periphery, for that is where the Unseen Fae dwell." <br/><span class="text-sm not-italic mt-2 block opacity-75">â Elder Kaelen's Journal, Entry 402</span>
+</blockquote>
+<h2>Flora &amp; Fauna</h2>
+<p>Notable species include the <span class="text-emerald-700 border-b border-emerald-300/50 bg-emerald-50/50 hover:bg-emerald-100/50 px-1 rounded-sm cursor-pointer transition-colors">Silver-Barked Oak</span> and the luminous <span class="text-purple-700 border-b border-purple-300/50 bg-purple-50/50 hover:bg-purple-100/50 px-1 rounded-sm cursor-pointer transition-colors">Ghost Ferns</span>, which glow faintly in the presence of latent magic.</p>
+<p>Recent scouting expeditions have uncovered ruins near the northern edge, suggesting a civilization pre-dating the Age of Dust.</p>
+<div class="my-8 p-6 rounded-lg bg-yellow-50/60 border border-yellow-200/60 flex gap-4 shadow-sm">
+<span class="material-symbols-outlined text-yellow-600 text-xl">lightbulb</span>
+<div class="text-base text-yellow-900/80 font-serif">
+<strong class="font-bold text-yellow-800 uppercase text-xs tracking-wider block mb-1">GM Note</strong>
+                        Players with Perception &gt; 15 may notice the subtle hum of the leylines converging here.
+                    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 bg-white/60 backdrop-blur-2xl border-t border-white/40 p-6 shadow-[0_-10px_40px_rgba(255,255,255,0.5)]">
+<div class="flex items-center justify-between mb-4">
+<h4 class="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-ethereal-accent">hub</span>
+                Relational Tagging Matrix
+            </h4>
+<button class="text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-50 text-gray-500 px-3 py-1.5 rounded-full border border-gray-200 transition-colors shadow-sm">
+                View Graph
+            </button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+<div class="flex items-center gap-2 bg-white/80 border border-white rounded-lg px-4 py-2.5 text-sm text-gray-600 group hover:border-blue-200 hover:shadow-md cursor-pointer transition-all min-w-max shadow-sm">
+<span class="material-symbols-outlined text-lg opacity-40 group-hover:text-blue-500 transition-colors">water_drop</span>
+<span class="font-medium">Sunken Grotto</span>
+<span class="ml-2 text-[9px] text-gray-400 font-bold uppercase border border-gray-200 px-1.5 py-0.5 rounded bg-gray-50">Near</span>
+</div>
+<div class="relative group">
+<div class="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-white border border-yellow-200 rounded-lg px-4 py-2.5 text-sm text-yellow-800 min-w-max shadow-glow-gold">
+<div class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse ring-2 ring-yellow-100"></div>
+<span class="italic font-medium">Linking...</span>
+</div>
+<div class="absolute -right-2 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-5 h-5 bg-white border border-yellow-200 rounded-full flex items-center justify-center shadow-md z-20">
+<span class="material-symbols-outlined text-[12px] text-yellow-600 font-bold">link</span>
+</div>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-300 border-dashed text-gray-400 hover:text-gray-600 hover:border-gray-400 hover:bg-white/50 transition-all bg-transparent">
+<span class="material-symbols-outlined text-xl font-light">add</span>
+</button>
+</div>
+</div>
+</aside>
 
 </body></html>
