@@ -2,9 +2,8 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Chronos Canvas: Cyber HUD Variant</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<title>Chronos: Codex Sidebar Inspection</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&amp;family=Rajdhani:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
@@ -13,30 +12,22 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#00f0ff",secondary: "#bd00ff","background-dark": "#000000","surface-dark": "#0a0a0a",
-                        "grid-line": "#1a1a2e",
+                        "cyber-black": "#050505",
+                        "cyber-dark": "#0a0a0a",
+                        "cyber-cyan": "#00f3ff",
+                        "cyber-magenta": "#ff00ff",
+                        "cyber-border": "#1a1a1a",
+                        "cyber-text-main": "#e0e0e0",
+                        "cyber-text-dim": "#666666",
                     },
                     fontFamily: {
-                        display: ["Space Grotesk", "sans-serif"],
                         mono: ["JetBrains Mono", "monospace"],
-                        body: ["Space Grotesk", "sans-serif"],
+                        sans: ["Rajdhani", "sans-serif"],
                     },
-                    backgroundImage: {
-                        'grid-pattern': "linear-gradient(to right, #2a2a40 1px, transparent 1px), linear-gradient(to bottom, #2a2a40 1px, transparent 1px)",
-                    },
-                    animation: {
-                        'flow': 'flow 20s linear infinite',
-                        'pulse-glow': 'pulse-glow 3s infinite',
-                    },
-                    keyframes: {
-                        flow: {
-                            '0%': { strokeDashoffset: '100' },
-                            '100%': { strokeDashoffset: '0' },
-                        },
-                        'pulse-glow': {
-                            '0%, 100%': { boxShadow: '0 0 5px #00f0ff, 0 0 10px #00f0ff' },
-                            '50%': { boxShadow: '0 0 2px #00f0ff, 0 0 5px #00f0ff' },
-                        }
+                    boxShadow: {
+                        'neon-cyan': '0 0 5px rgba(0, 243, 255, 0.5), 0 0 10px rgba(0, 243, 255, 0.3)',
+                        'neon-magenta': '0 0 5px rgba(255, 0, 255, 0.5), 0 0 10px rgba(255, 0, 255, 0.3)',
+                        'hud-glow': 'inset 0 0 20px rgba(0, 243, 255, 0.05)',
                     }
                 },
             },
@@ -49,225 +40,308 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
-        }.cyber-panel {
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid #00f0ff;
-            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2), inset 0 0 20px rgba(0, 240, 255, 0.05);
-            backdrop-filter: blur(4px);
         }
-        .cyber-panel-secondary {
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid #bd00ff;
-            box-shadow: 0 0 8px rgba(189, 0, 255, 0.2), inset 0 0 20px rgba(189, 0, 255, 0.05);
-            backdrop-filter: blur(4px);
+        .cyber-panel {
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            position: relative;
         }
-        .infinite-grid {
-            background-size: 60px 60px;mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
-            -webkit-mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
-        }
-        .corner-accent {
+        .cyber-panel::before {
+            content: '';
             position: absolute;
-            width: 8px;
-            height: 8px;
-            border-style: solid;
-            border-color: #00f0ff;
-            border-width: 0;
+            top: -1px; left: -1px;
+            width: 10px; height: 10px;
+            border-top: 2px solid #00f3ff;
+            border-left: 2px solid #00f3ff;
+        }
+        .cyber-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid #00f3ff;
+            border-right: 2px solid #00f3ff;
+        }
+        .active-node-glow {
+            position: absolute;
+            z-index: -1;
+            width: 140%;
+            height: 140%;
+            top: -20%;
+            left: -20%;
+            background: radial-gradient(circle, rgba(0, 243, 255, 0.15) 0%, rgba(0,0,0,0) 60%);
             pointer-events: none;
         }
-        .corner-tl { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
-        .corner-tr { top: -1px; right: -1px; border-top-width: 2px; border-right-width: 2px; }
-        .corner-bl { bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px; }
-        .corner-br { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
-        .flowing-dash {
-            stroke-dasharray: 10, 10;
-            animation: flow 1s linear infinite;
+        .connector-line {
+            stroke-dasharray: 4, 4;
+            stroke-width: 1.5px;
+            filter: drop-shadow(0 0 2px #00f3ff);
         }
-    </style>
-<style>
+        .scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            position: absolute;
+            pointer-events: none;
+            inset: 0;
+            z-index: 50;
+            opacity: 0.1;
+        }
         body {
-            min-height: max(884px, 100dvh);
+          min-height: max(884px, 100dvh);
+        }
+        .hud-corner-tl {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            border-top: 2px solid #00f3ff;
+            border-left: 2px solid #00f3ff;
+        }
+        .hud-corner-tr {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            border-top: 2px solid #ff00ff;
+            border-right: 2px solid #ff00ff;
+        }
+        .hud-corner-bl {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            border-bottom: 2px solid #00f3ff;
+            border-left: 2px solid #00f3ff;
+        }
+        .hud-corner-br {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            border-bottom: 2px solid #ff00ff;
+            border-right: 2px solid #ff00ff;
         }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-background-dark text-slate-100 font-display h-screen w-full overflow-hidden flex flex-col relative selection:bg-primary selection:text-black">
-<div class="absolute inset-0 z-0 pointer-events-none opacity-40 infinite-grid bg-grid-pattern shadow-[inset_0_0_100px_rgba(0,0,0,1)]"></div>
-<div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(0,240,255,0.03),transparent_70%)]"></div>
-<header class="absolute top-0 left-0 right-0 z-50 pt-12 pb-4 px-4 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent">
-<div class="flex items-center gap-0 cyber-panel rounded-none px-2 py-1 clip-path-polygon">
-<div class="flex items-center gap-2 px-2 border-r border-primary/30 h-full">
-<span class="material-symbols-outlined text-primary text-sm">terminal</span>
-</div>
-<div class="flex items-center gap-1 px-3 font-mono text-[10px] tracking-widest uppercase">
-<span class="text-slate-500">SYS</span>
-<span class="text-primary">&gt;</span>
-<button class="text-slate-300 hover:text-primary transition-colors">ELDORIA</button>
-<span class="text-primary">&gt;</span>
-<button class="text-slate-300 hover:text-primary transition-colors">SEC_01</button>
-<span class="text-primary">&gt;</span>
-<span class="text-white font-bold drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">WHISPERING_WOODS</span>
-</div>
-</div>
-<button class="cyber-panel p-2 rounded-none text-primary hover:bg-primary/10 transition-colors">
-<span class="material-symbols-outlined text-lg">settings_suggest</span>
-</button>
-</header>
-<main class="flex-1 relative w-full h-full overflow-hidden z-10 touch-none">
-<svg class="absolute inset-0 w-full h-full pointer-events-none z-0 filter drop-shadow-[0_0_3px_#00f0ff]">
+</head>
+<body class="bg-black text-cyber-text-main font-sans h-screen w-full overflow-hidden flex flex-col relative antialiased selection:bg-cyber-cyan selection:text-black">
+<div class="scanline"></div>
+<main class="flex-1 relative w-full h-full overflow-hidden z-0 touch-none transition-all duration-500 ease-in-out pr-[40%]">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
 <defs>
-<linearGradient id="gradientLine" x1="0%" x2="100%" y1="0%" y2="0%">
-<stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0"></stop>
-<stop offset="50%" style="stop-color:#00f0ff;stop-opacity:1"></stop>
-<stop offset="100%" style="stop-color:#bd00ff;stop-opacity:1"></stop>
-</linearGradient>
+<pattern height="40" id="grid" patternUnits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 243, 255, 0.05)" stroke-width="1"></path>
+</pattern>
 </defs>
-<path class="flowing-dash" d="M180,300 C250,300 150,520 220,520" fill="none" stroke="#00f0ff" stroke-width="2"></path>
-<path d="M220,520 C280,520 300,450 340,400" fill="none" stroke="#bd00ff" stroke-dasharray="2,4" stroke-opacity="0.8" stroke-width="2"></path>
-<g transform="translate(180, 375)">
-<rect fill="#000" height="24" stroke="#00f0ff" stroke-width="1" width="140" x="0" y="0"></rect>
-<text fill="#00f0ff" font-family="JetBrains Mono" font-size="9" font-weight="bold" letter-spacing="1px" text-anchor="middle" x="70" y="16">DATA_LINK::CORRUPT</text>
-<rect fill="#00f0ff" height="4" width="4" x="-2" y="-2"></rect>
-<rect fill="#00f0ff" height="4" width="4" x="138" y="22"></rect>
-</g>
+<rect fill="url(#grid)" height="100%" width="100%"></rect>
+<path class="connector-line animate-pulse" d="M180,300 C250,300 150,520 220,520" fill="none" stroke="#00f3ff"></path>
+<path class="connector-line" d="M220,520 C280,520 300,450 340,400" fill="none" stroke="#ff00ff" stroke-opacity="0.5"></path>
+<rect fill="#0a0a0a" height="18" rx="0" stroke="#ff00ff" stroke-width="1" width="90" x="185" y="383"></rect>
+<text fill="#ff00ff" font-family="JetBrains Mono" font-size="9" font-weight="bold" letter-spacing="1" text-anchor="middle" x="230" y="396">CORRUPTION</text>
 </svg>
-<div class="absolute top-[220px] left-6 w-64 cyber-panel-secondary p-0 group hover:shadow-[0_0_15px_rgba(189,0,255,0.4)] transition-all duration-300">
-<div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-secondary"></div>
-<div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-secondary"></div>
-<div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-secondary"></div>
-<div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-secondary"></div>
-<div class="p-4 relative bg-black/40">
-<div class="flex items-start justify-between mb-3">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 border border-secondary bg-secondary/10 flex items-center justify-center text-secondary shadow-[0_0_10px_rgba(189,0,255,0.3)]">
-<span class="material-symbols-outlined text-lg">fort</span>
+<div class="absolute top-[220px] left-6 w-64 cyber-panel p-5 opacity-80 pointer-events-none border-l-4 border-l-cyber-magenta/50 !border-t-0 !border-r-0 !border-b-0">
+<div class="active-node-glow opacity-0"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-widest text-cyber-magenta font-mono">LOC_ID: 0X92</span>
+<h3 class="text-white font-mono font-bold text-lg leading-tight uppercase tracking-wider">The Obsidian Spire</h3>
 </div>
-<div>
-<h3 class="text-white font-mono font-bold text-sm tracking-wider uppercase leading-tight text-shadow-[0_0_5px_rgba(255,255,255,0.5)]">Obsidian_Spire</h3>
-<p class="text-[10px] text-secondary font-mono mt-0.5">LOC::MAGIC_FOCUS</p>
+<span class="material-symbols-outlined text-cyber-magenta text-base drop-shadow-[0_0_5px_rgba(255,0,255,0.8)]">castle</span>
 </div>
+<div class="h-20 w-full bg-black mb-4 overflow-hidden relative border border-cyber-magenta/30">
+<img alt="Dark gothic spire silhouette against a purple night sky" class="w-full h-full object-cover opacity-60 mix-blend-luminosity contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
+<div class="absolute inset-0 bg-cyber-magenta/10"></div>
 </div>
-<button class="text-secondary/50 hover:text-secondary"><span class="material-symbols-outlined text-lg">drag_handle</span></button>
-</div>
-<div class="h-24 w-full border border-secondary/30 mb-3 overflow-hidden relative group-hover:border-secondary transition-colors">
-<img alt="Dark gothic spire silhouette against a purple night sky" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity grayscale hover:grayscale-0" data-alt="Dark gothic spire silhouette against a purple night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByVTR-yxgCClyixotMUZlPor2O-lqoFPHuXmgVjWa4bFIy_XOXtFuDFgEpSxw9jT2LbYlAUdQ6_jrnu2IC7WYOEozccyXXobBTeyyixE_B9_SnkRIGd1IXmMVOVLZhrGxZMDqisvQxGzBcYenfCND1earVxqjOC5rYdJ96dVnhzBlMHchYwLidtYINofq5wxl9RBCCETqyug6U5ioV2hLz-xhcfr1b-_6WXJvMU-9P5k20l5aAECVQpD1NoTgoSqzCsTve9ON1cA"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-<div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none"></div>
-</div>
-<div class="flex gap-2 text-[9px] font-mono uppercase tracking-widest">
-<span class="px-2 py-1 bg-secondary/20 text-secondary border border-secondary/50">Ancient</span>
-<span class="px-2 py-1 bg-red-900/40 text-red-500 border border-red-500/50">Danger_Lvl:High</span>
+<div class="border-t border-cyber-magenta/20 pt-3 mt-1 flex justify-between items-center">
+<span class="text-[10px] text-cyber-text-dim font-mono uppercase">Node Type: Magical Focus</span>
+<div class="w-1.5 h-1.5 bg-cyber-magenta shadow-[0_0_8px_#ff00ff]"></div>
 </div>
 </div>
+<div class="absolute top-[480px] left-[20%] -translate-x-1/2 w-72 cyber-panel p-6 shadow-neon-cyan !border-cyber-cyan">
+<div class="absolute -top-3 left-4 bg-black px-2 text-[10px] text-cyber-cyan font-mono border border-cyber-cyan">ACTIVE_TARGET</div>
+<div class="active-node-glow opacity-100"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-widest text-cyber-cyan font-mono">TERRITORY_SEC_04</span>
+<h3 class="text-white font-mono font-bold text-xl leading-tight uppercase">Whispering Woods</h3>
 </div>
-<div class="absolute top-[480px] left-1/2 -translate-x-1/2 w-72 cyber-panel p-0 group transition-all z-20 hover:scale-[1.02]">
-<div class="corner-accent corner-tl"></div>
-<div class="corner-accent corner-tr"></div>
-<div class="corner-accent corner-bl"></div>
-<div class="corner-accent corner-br"></div>
-<div class="absolute -top-3 -right-3 w-6 h-6 bg-black border border-primary text-primary flex items-center justify-center text-[10px] font-mono font-bold shadow-[0_0_10px_#00f0ff] z-10">02</div>
-<div class="p-5 bg-black/60 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-full h-[1px] bg-primary/50 shadow-[0_0_10px_#00f0ff] animate-[scan_3s_ease-in-out_infinite]"></div>
-<div class="flex items-start justify-between mb-3">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 border border-primary bg-primary/10 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-<span class="material-symbols-outlined text-xl">token</span>
-</div>
-<div>
-<h3 class="text-white font-mono font-bold text-base tracking-widest uppercase leading-tight drop-shadow-md">Whispering<br/>Woods</h3>
-<p class="text-[10px] text-primary font-mono mt-1">TERRITORY::FAE</p>
+<div class="w-8 h-8 border border-cyber-cyan bg-cyber-cyan/10 flex items-center justify-center text-cyber-cyan shadow-neon-cyan">
+<span class="material-symbols-outlined text-lg">forest</span>
 </div>
 </div>
-<button class="text-primary/50 hover:text-primary"><span class="material-symbols-outlined">drag_handle</span></button>
+<p class="text-sm font-sans font-medium text-cyber-text-main mb-5 leading-relaxed border-l-2 border-cyber-cyan pl-3">
+            // "Home of the unseen fae. The trees themselves seem to shift when not observed directly."
+        </p>
+<div class="flex items-center justify-between pt-2 border-t border-cyber-cyan/30">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 bg-gray-800 border border-cyber-cyan/50 text-cyber-cyan flex items-center justify-center text-[8px] font-mono">01</div>
+<div class="w-6 h-6 bg-gray-800 border border-cyber-cyan/50 text-cyber-cyan flex items-center justify-center text-[8px] font-mono">02</div>
+<div class="w-6 h-6 bg-cyber-cyan text-black font-bold border border-cyber-cyan flex items-center justify-center text-[10px]">+3</div>
 </div>
-<p class="text-xs font-mono text-slate-300 mb-4 leading-relaxed border-l-2 border-primary/30 pl-3">
-                &gt; ALERT: Reality shift detected.<br/>
-                &gt; Flora exhibits quantum instability when unobserved.
-            </p>
-<div class="flex items-center justify-between mt-2 pt-3 border-t border-primary/20">
-<div class="flex -space-x-3">
-<div class="w-6 h-6 border border-primary bg-black flex items-center justify-center text-[8px] text-primary font-mono">A</div>
-<div class="w-6 h-6 border border-primary bg-black flex items-center justify-center text-[8px] text-primary font-mono">B</div>
-<div class="w-6 h-6 border border-primary bg-primary/20 flex items-center justify-center text-[8px] text-primary font-mono">+3</div>
-</div>
-<button class="text-primary text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-primary hover:text-black px-2 py-1 transition-colors border border-transparent hover:border-primary">
-                    [ EXPAND_DATA ]
-                </button>
+<div class="text-[10px] uppercase tracking-widest text-cyber-cyan font-bold px-3 py-1 bg-cyber-cyan/10 border border-cyber-cyan/30">
+                STATUS: ONLINE
+            </div>
 </div>
 </div>
+<div class="absolute top-[350px] left-[320px] w-48 bg-black/80 border border-dashed border-gray-600 p-4 opacity-50 scale-95 pointer-events-none">
+<div class="flex items-center justify-between mb-2">
+<h4 class="text-gray-400 font-mono font-bold text-sm uppercase">Sunken Grotto</h4>
+<span class="material-symbols-outlined text-xs text-gray-500">water_drop</span>
 </div>
-<div class="absolute top-[350px] left-[320px] w-48 border border-slate-700 bg-black/80 p-3 opacity-60 hover:opacity-100 transition-opacity scale-90">
-<div class="flex items-center gap-2 mb-2">
-<div class="w-6 h-6 border border-slate-600 flex items-center justify-center">
-<span class="material-symbols-outlined text-xs text-slate-400">water</span>
+<div class="h-[2px] w-full bg-gray-800 mt-2 mb-2">
+<div class="h-full bg-gray-500 w-1/3"></div>
 </div>
-<h4 class="text-slate-400 font-mono font-bold text-xs uppercase tracking-wider">Sunken_Grotto</h4>
-</div>
-<div class="h-1 w-full bg-slate-900 overflow-hidden border border-slate-800">
-<div class="h-full bg-slate-500 w-1/3"></div>
-</div>
-<p class="text-[9px] font-mono text-slate-600 mt-1 uppercase">Loading_Assets...</p>
+<p class="text-[9px] uppercase tracking-widest text-gray-500 text-right font-mono">[DRAFT_MODE]</p>
 </div>
 </main>
-<div class="absolute bottom-28 right-4 flex flex-col gap-3 z-20">
-<div class="bg-black border border-primary/30 p-1 flex flex-col gap-1 shadow-[0_0_10px_rgba(0,0,0,0.8)]">
-<button class="w-8 h-8 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-colors border border-transparent hover:border-primary/50">
-<span class="material-symbols-outlined text-lg">add</span>
+<div class="absolute bottom-10 left-8 z-10 flex flex-col items-start gap-4 pointer-events-none">
+<div class="flex gap-2 pointer-events-auto bg-black border border-cyber-cyan/30 px-4 py-2">
+<div class="w-2 h-2 bg-cyber-cyan shadow-[0_0_5px_#00f3ff]"></div>
+<div class="w-2 h-2 bg-cyber-cyan/20"></div>
+<div class="w-2 h-2 bg-cyber-cyan/20"></div>
+</div>
+</div>
+<header class="absolute top-0 left-0 right-[40%] z-20 pt-8 pb-4 px-6 flex justify-between items-center pointer-events-none">
+<div class="flex items-center gap-4 text-cyber-cyan pointer-events-auto">
+<div class="border border-cyber-cyan/50 p-1 bg-black/50 backdrop-blur-sm">
+<span class="material-symbols-outlined text-lg">menu_book</span>
+</div>
+<div class="flex items-center gap-2 text-xs tracking-widest uppercase font-mono font-bold text-white/80">
+<span class="text-cyber-cyan">SYS.ELDORIA</span>
+<span class="text-gray-600">///</span>
+<span class="text-gray-400">SEC.FRACTURED_LANDS</span>
+</div>
+</div>
+</header>
+<aside class="absolute top-0 right-0 h-full w-[40%] z-50 flex flex-col bg-black border-l-2 border-cyber-cyan shadow-[0_0_50px_rgba(0,0,0,0.9)]">
+<div class="hud-corner-tl opacity-50"></div>
+<div class="hud-corner-bl opacity-50"></div>
+<div class="flex items-center justify-between px-8 py-6 border-b border-gray-800 bg-cyber-dark/50 relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwgMjQzLCAyNTUsIDAuMDUpIi8+PC9zdmc+')] opacity-20"></div>
+<div class="flex items-center gap-3 z-10">
+<span class="material-symbols-outlined text-cyber-cyan text-xl">edit_note</span>
+<span class="text-xs uppercase tracking-[0.3em] text-cyber-cyan font-mono font-bold">INSPECTION_MODE</span>
+</div>
+<div class="flex items-center gap-4 z-10">
+<button class="text-gray-500 hover:text-cyber-cyan transition-colors">
+<span class="material-symbols-outlined text-lg">open_in_full</span>
 </button>
-<div class="h-[1px] w-full bg-primary/20"></div>
-<button class="w-8 h-8 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-colors border border-transparent hover:border-primary/50">
-<span class="material-symbols-outlined text-lg">remove</span>
-</button>
-</div>
-<button class="w-10 h-10 bg-black border border-primary text-primary hover:bg-primary hover:text-black transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)] flex items-center justify-center group">
-<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">center_focus_weak</span>
-</button>
-</div>
-<div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30">
-<button class="group relative flex items-center justify-center h-14 pl-6 pr-8 bg-black border-2 border-primary shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.7)] transition-all active:scale-95 text-primary overflow-hidden clip-path-polygon">
-<div class="absolute inset-0 bg-primary/10 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300"></div>
-<span class="material-symbols-outlined mr-3 text-2xl group-hover:rotate-90 transition-transform duration-500">add_circle</span>
-<div class="flex flex-col items-start">
-<span class="font-mono font-bold tracking-widest text-sm">CREATE_NODE</span>
-<span class="text-[9px] font-mono opacity-60">INIT_SEQUENCE</span>
-</div>
-<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-primary"></div>
-<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary"></div>
-</button>
-</div>
-<nav class="absolute bottom-0 w-full z-40 pointer-events-none">
-<div class="w-full flex justify-center pointer-events-auto">
-<div class="flex gap-8 border-t border-l border-r border-primary/50 bg-black/90 px-8 pb-8 pt-4 clip-path-polygon backdrop-blur-md shadow-[0_-5px_20px_rgba(0,0,0,0.8)] rounded-t-lg relative">
-<div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_10px_#00f0ff]"></div>
-<a class="flex flex-col items-center justify-end gap-1 text-primary group" href="#">
-<div class="relative">
-<span class="material-symbols-outlined text-[24px] group-hover:text-white transition-colors z-10 relative">grid_view</span>
-<div class="absolute inset-0 bg-primary blur-md opacity-40 group-hover:opacity-80 transition-opacity"></div>
-</div>
-<span class="text-[9px] font-mono font-bold tracking-widest uppercase mt-1">Canvas</span>
-</a>
-<a class="flex flex-col items-center justify-end gap-1 text-slate-500 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined text-[24px]">account_tree</span>
-<span class="text-[9px] font-mono font-bold tracking-widest uppercase mt-1">Timeline</span>
-</a>
-<a class="flex flex-col items-center justify-end gap-1 text-slate-500 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined text-[24px]">group</span>
-<span class="text-[9px] font-mono font-bold tracking-widest uppercase mt-1">Entities</span>
-</a>
-<a class="flex flex-col items-center justify-end gap-1 text-slate-500 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined text-[24px]">settings_system_daydream</span>
-<span class="text-[9px] font-mono font-bold tracking-widest uppercase mt-1">Config</span>
-</a>
-</div>
-</div>
-</nav>
-<div class="absolute top-20 right-4 z-20">
-<button class="w-10 h-10 bg-black border border-primary/40 rounded-none flex items-center justify-center text-primary/70 hover:text-primary hover:border-primary hover:shadow-[0_0_10px_rgba(0,240,255,0.3)] transition-all">
-<span class="material-symbols-outlined text-xl">search</span>
+<button class="text-gray-500 hover:text-cyber-magenta transition-colors">
+<span class="material-symbols-outlined text-xl">close</span>
 </button>
 </div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar px-10 py-8 relative">
+<div class="absolute top-0 right-0 w-32 h-32 border-r border-t border-gray-800 opacity-30 pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-6 text-[10px] uppercase tracking-widest font-mono text-gray-500">
+<span>ROOT</span>
+<span class="text-cyber-cyan">&gt;</span>
+<span>FRACTURED_LANDS</span>
+<span class="text-cyber-cyan">&gt;</span>
+<span class="text-cyber-cyan font-bold">WHISPERING_WOODS</span>
+</div>
+<h1 class="font-mono font-bold text-4xl text-white mb-6 leading-tight focus:outline-none bg-transparent uppercase tracking-tight" contenteditable="true">
+            Whispering<br/><span class="text-cyber-cyan">Woods</span>
+</h1>
+<div class="grid grid-cols-2 gap-x-8 gap-y-6 mb-8 pb-8 border-b border-dashed border-gray-800">
+<div>
+<label class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-1">Type_Class</label>
+<div class="flex items-center gap-2 text-cyber-text-main text-sm font-sans font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm text-cyber-cyan">forest</span>
+                    Territory
+                </div>
+</div>
+<div>
+<label class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-1">System_Status</label>
+<div class="flex items-center gap-2 text-cyber-cyan text-sm font-sans font-bold uppercase tracking-wider">
+<span class="w-2 h-2 bg-cyber-cyan shadow-[0_0_8px_#00f3ff] animate-pulse"></span>
+                    Online
+                </div>
+</div>
+<div>
+<label class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-1">Owner_ID</label>
+<div class="flex items-center gap-2 text-gray-300 text-sm font-sans uppercase">
+                    [Unknown Faction]
+                </div>
+</div>
+<div>
+<label class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-1">Creation_Date</label>
+<div class="flex items-center gap-2 text-gray-300 text-sm font-sans font-mono text-xs">
+                    AGE_DUST.402
+                </div>
+</div>
+</div>
+<div class="prose prose-invert prose-sm max-w-none">
+<p class="text-gray-300 font-sans leading-relaxed text-[16px] mb-4 border-l-2 border-gray-800 pl-4">
+                The <span class="text-cyber-cyan">Whispering Woods</span> is not merely a forest, but a sentient organism of vast proportions. Travelers report that the trees themselves seem to shift positions when not directly observed, creating a labyrinth that defies traditional cartography.
+            </p>
+<p class="text-gray-400 font-sans leading-relaxed text-[15px] mb-4">
+                &gt; Local legends speak of the "Unseen Fae," entities that exist in the peripheral vision of those who dare enter. They do not speak with voices, but rather through the rustling of leaves and the creaking of ancient branches.
+            </p>
+<h3 class="font-mono font-bold text-lg text-white mt-8 mb-3 uppercase flex items-center gap-2">
+<span class="w-1 h-4 bg-cyber-magenta"></span>
+                Flora &amp; Fauna
+            </h3>
+<p class="text-gray-400 font-sans leading-relaxed text-[15px]">
+                Notable species include the <span class="text-cyber-magenta border-b border-cyber-magenta/30 cursor-pointer hover:border-cyber-magenta hover:text-white transition-colors">Silver-Barked Oak</span> and the luminous <span class="text-cyber-magenta border-b border-cyber-magenta/30 cursor-pointer hover:border-cyber-magenta hover:text-white transition-colors">Ghost Ferns</span>. The latter is known to glow faintly when magic is used in proximity.
+            </p>
+</div>
+<div class="mt-12 pt-8 border-t border-gray-800 relative">
+<div class="absolute -top-3 left-0 bg-black px-2 text-[10px] text-gray-600 font-mono">DATA_LINKS</div>
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-mono font-bold text-lg text-white uppercase">Relational Tagging Matrix</h4>
+<button class="text-[10px] uppercase tracking-widest text-cyber-cyan border border-cyber-cyan/50 hover:bg-cyber-cyan hover:text-black font-bold px-4 py-2 transition-all shadow-[0_0_10px_rgba(0,243,255,0.1)]">
+                    [+] Link Node
+                </button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-black border border-gray-800 hover:border-cyber-magenta transition-all group cursor-pointer relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-cyber-magenta/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 z-10">
+<div class="w-10 h-10 bg-black flex items-center justify-center border border-gray-700 text-cyber-magenta shadow-[0_0_5px_rgba(255,0,255,0.2)]">
+<span class="material-symbols-outlined text-lg">castle</span>
+</div>
+<div>
+<div class="text-sm text-white font-mono font-bold uppercase">The Obsidian Spire</div>
+<div class="text-[10px] text-gray-500 font-mono">LINK: <span class="text-cyber-magenta">CORRUPTION</span></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-cyber-magenta text-sm transition-colors">arrow_forward</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-black border border-gray-800 hover:border-cyber-cyan transition-all group cursor-pointer relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-cyber-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 z-10">
+<div class="w-10 h-10 bg-black flex items-center justify-center border border-gray-700 text-cyber-cyan shadow-[0_0_5px_rgba(0,243,255,0.2)]">
+<span class="material-symbols-outlined text-lg">water_drop</span>
+</div>
+<div>
+<div class="text-sm text-white font-mono font-bold uppercase">Sunken Grotto</div>
+<div class="text-[10px] text-gray-500 font-mono">LINK: <span class="text-cyber-cyan">GEO_PROXIMITY</span></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-cyber-cyan text-sm transition-colors">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-cyber-cyan/20 flex items-center justify-between bg-black relative">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/50 to-transparent"></div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 border border-gray-800 flex items-center justify-center text-gray-500 hover:text-cyber-cyan hover:border-cyber-cyan transition-colors bg-black">
+<span class="material-symbols-outlined text-lg">history</span>
+</button>
+<button class="w-10 h-10 border border-gray-800 flex items-center justify-center text-gray-500 hover:text-cyber-cyan hover:border-cyber-cyan transition-colors bg-black">
+<span class="material-symbols-outlined text-lg">share</span>
+</button>
+</div>
+<button class="px-6 py-2 bg-cyber-cyan text-black text-xs font-bold font-mono uppercase tracking-widest hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all clip-path-slant">
+            Save_Changes
+        </button>
+</div>
+</aside>
 
 </body></html>
