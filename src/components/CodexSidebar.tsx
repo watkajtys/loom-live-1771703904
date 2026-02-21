@@ -141,6 +141,7 @@ const CodexSidebar: React.FC<CodexSidebarProps> = ({ isOpen, onClose, onRelation
               <motion.div 
                 className="absolute top-[25%] right-[20%] cursor-pointer z-30"
                 drag
+                dragSnapToOrigin={true}
                 dragMomentum={false}
                 dragElastic={0.1}
                 whileHover={{ scale: 1.1 }}
@@ -159,6 +160,7 @@ const CodexSidebar: React.FC<CodexSidebarProps> = ({ isOpen, onClose, onRelation
               <motion.div 
                  className="absolute bottom-[25%] left-[20%] cursor-pointer z-30"
                  drag
+                 dragSnapToOrigin={true}
                  dragMomentum={false}
                  dragElastic={0.1}
                  whileHover={{ scale: 1.1 }}
